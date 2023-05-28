@@ -1,0 +1,22 @@
+version: "3"
+services:
+  verdaccio:
+    image: "verdaccio/verdaccio:5.24"
+    container_name: verdaccio
+    volumes:
+      - "./conf:/verdaccio/conf"
+    ports:
+      - "4873:4873"
+    networks:
+      - verdaccio_network
+
+  redis:
+    image: redis
+    command: redis-server --requirepass yourCustomPwd
+    ports:
+      - "6379:6379"
+    networks:
+      - verdaccio_network
+
+networks:
+  verdaccio_network:

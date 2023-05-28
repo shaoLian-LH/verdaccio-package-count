@@ -1,0 +1,52 @@
+storage: /verdaccio/storage
+data: /verdaccio/storage
+plugins: /verdaccio/plugins
+
+web:
+  title: NPM私服
+
+i18n:
+  web: zh-CN
+
+auth:
+  htpasswd:
+    file: /verdaccio/htpasswd
+
+middlewares:
+  package-count:
+    enabled: true
+    # 远端的 redis 配置，这里是本地模拟时的配置
+    redis:
+      host: redis
+      port: 6379
+      password: yourCustomPwd
+      index: 6
+
+uplinks:
+  npmjs:
+    url: https://registry.npmjs.org/
+  taobao:
+    url: https://registry.npmmirror.com/
+  tencent:
+    url: https://mirrors.cloud.tencent.com/npm/
+  cnpm:
+    url: https://r.cnpmjs.org/
+  yarnjs:
+    url: https://r.cnpmjs.org/
+
+max_body_size: 2048mb
+
+packages:
+  "**":
+    access: $all
+    publish: $authenticated
+    unpublish: $all
+    proxy: taobao tencent cnpm npmjs yarnjs
+
+# log settings
+logs:
+  - { type: stdout, format: pretty, level: http }
+  - { type: stdout, format: pretty, level: debug }
+
+publish:
+  allow_offline: true
