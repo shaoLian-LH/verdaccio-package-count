@@ -13,14 +13,10 @@ const parseJSON = (mayBeJSON: unknown, initial = {}) => {
 }
 
 export default class VerdaccioMiddlewarePlugin implements IPluginMiddleware<CustomConfig> {
-  public logger: Logger;
-  public foo: string;
   public redisConfig: RedisConfig
   private redisPool: RedisPool
 
   public constructor(config: CustomConfig, options: PluginOptions<CustomConfig>) {
-    this.foo = config.foo !== undefined ? config.strict_ssl : true;
-    this.logger = options.logger;
     this.redisConfig = config.redis as RedisConfig
     this.redisPool = new RedisPool(this.redisConfig)
   }
