@@ -1,4 +1,4 @@
-import { Logger, IPluginMiddleware, IBasicAuth, IStorageManager, PluginOptions } from '@verdaccio/types';
+import { IPluginMiddleware, IBasicAuth, IStorageManager, PluginOptions } from '@verdaccio/types';
 import {Router, Request, Response, NextFunction, Application} from 'express';
 import { CustomConfig } from '../types/index';
 import type { RedisConfig } from './RedisPool'
@@ -36,13 +36,12 @@ export default class VerdaccioMiddlewarePlugin implements IPluginMiddleware<Cust
     downloadInterceptor.get('/*/-/*', async (req: Request, res: Response, next: NextFunction) => {
       // 将 GET 操作视为下载包的操作
       if (req.method !== 'GET') return 
+       // 获取 redis 客户端
+      const redisClient = await this._getRedisClient()
       
       try {     
         // 获取具体报名，带 @ 的部分包无法从第二个 param 获取，但是第一个一定是全名
         const packageName = req.params[0]
-        
-        // 获取 redis 客户端
-        const redisClient = await this._getRedisClient()
 
         // 获取下载次数的缓存
         const today = new Date(Date.now() + 8 * 60 * 60 * 1000)
@@ -86,6 +85,7 @@ export default class VerdaccioMiddlewarePlugin implements IPluginMiddleware<Cust
       } catch (e) {
         console.error('package download 计算时失败，原因是 - ', e)
       } finally { 
+        redisClient.quit()
         next()
       }
     })

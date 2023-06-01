@@ -20,7 +20,7 @@ middlewares:
       host: redis
       port: 6379
       password: yourCustomPwd
-      index: 6
+      db: 6
 
 uplinks:
   npmjs:

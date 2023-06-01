@@ -4,7 +4,7 @@ export interface RedisConfig {
   port: number
   host: string
   password: string
-  index: number
+  db: number
 }
 
 export default class RedisPool {
@@ -12,7 +12,7 @@ export default class RedisPool {
   private _redisConfig: RedisConfig
 
   private async _prepareRedisClient(number = 5) {
-    const { port, host, password, index = 0 } = this._redisConfig
+    const { port, host, password, db = 0 } = this._redisConfig
     const redisClient = new Redis(this._redisConfig);
     for (let i = 0; i < number; i++) {
       const redisClient = new Redis(Number(port), host, {
@@ -22,7 +22,7 @@ export default class RedisPool {
           return delay
         },
       })
-      await redisClient.select(index)
+      await redisClient.select(db)
       this._pool.push(redisClient)
     }
   }
@@ -40,7 +40,7 @@ export default class RedisPool {
     }
 
     const redisClient = new Redis(this._redisConfig);
-    await redisClient.select(Number(this._redisConfig.index));
+    await redisClient.select(Number(this._redisConfig.db));
     return redisClient;
   }
 
